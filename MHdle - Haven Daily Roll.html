@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MHdle - Haven Daily Roll</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1019;--panel:#121c2a;--line:#29394d;--text:#edf5ff;--muted:#9aacc2;--gold:#ffc857;--cyan:#6de4ff;--purple:#c5a0ff}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -20%,#233d5b 0,transparent 55%),var(--bg);font-family:Inter,system-ui,Segoe UI,sans-serif;color:var(--text);min-height:100vh}.wrap{max-width:1000px;margin:auto;padding:28px 18px 60px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.brand{font-weight:900;letter-spacing:.12em;font-size:13px;color:var(--cyan)}.pill{border:1px solid var(--line);padding:8px 12px;border-radius:999px;color:var(--muted);font-size:12px}.hero{text-align:center;padding:38px 0 25px}.eyebrow{color:var(--gold);font-size:12px;font-weight:800;letter-spacing:.2em;text-transform:uppercase}.hero h1{font-size:clamp(34px,7vw,64px);margin:10px 0;line-height:1;letter-spacing:-.05em}.hero p{color:var(--muted);max-width:560px;margin:12px auto;line-height:1.6}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:600px;margin:24px auto}.stat,.panel{background:linear-gradient(145deg,#172436,#101824);border:1px solid var(--line);border-radius:16px}.stat{padding:14px}.stat strong{display:block;font-size:24px}.stat span{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.1em}.roll-card{max-width:660px;margin:0 auto;background:linear-gradient(145deg,#18283a,#101722);border:1px solid #38516b;border-radius:22px;padding:22px;text-align:center;box-shadow:0 20px 70px #0005}.relic{height:190px;border-radius:16px;display:grid;place-items:center;background:radial-gradient(circle,#254a65 0,#142337 43%,#0d1521 75%);border:1px solid #314960;margin-bottom:20px;position:relative;overflow:hidden}.relic:before,.relic:after{content:"";position:absolute;width:230px;height:230px;border:1px solid #6de4ff22;border-radius:50%}.relic:after{width:155px;height:155px}.cube{font-size:74px;filter:drop-shadow(0 0 18px #6de4ff55);z-index:1}.item-image{max-width:78%;max-height:165px;object-fit:contain;z-index:2;filter:drop-shadow(0 0 18px #6de4ff55);display:none}.timer-panel{max-width:660px;margin:0 auto 14px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:#111d2b;border:1px solid #30465d;border-radius:14px}.timer-value{font-size:clamp(22px,4vw,30px);font-weight:900;font-variant-numeric:tabular-nums;color:var(--cyan);letter-spacing:.04em}.timer-caption{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}.item-source{display:inline-block;margin-top:10px;color:#83dfff;font-size:11px;text-decoration:none}.item-source:hover{text-decoration:underline}.result-name{font-size:clamp(24px,5vw,36px);font-weight:850;margin:12px 0 6px}.result-meta{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:14px 0}.tag{font-size:11px;font-weight:800;padding:6px 10px;border-radius:999px;background:#233247;border:1px solid #3b5069;color:#c8d9ed}.tag.shiny{background:#3a2b52;color:#e2caff;border-color:#7955a5}.tag.limited{background:#4b2c22;color:#ffd0a4;border-color:#9d5c38}.desc{color:var(--muted);font-size:13px;line-height:1.55;min-height:38px}.rollbtn{margin-top:12px;border:0;border-radius:12px;padding:15px 25px;background:linear-gradient(100deg,#65e4ff,#a7f3d0);color:#07131b;font-weight:900;font-size:15px;cursor:pointer;box-shadow:0 6px 25px #65e4ff22}.rollbtn:disabled{filter:grayscale(.8);opacity:.65;cursor:not-allowed}.subnote{font-size:11px;color:var(--muted);margin-top:12px}.layout{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}.panel{padding:18px}.panel h2{font-size:16px;margin:0 0 14px}.history-row,.collection-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #29394d88;font-size:13px}.item-line{display:flex;align-items:center;gap:9px;min-width:0}.item-line>div{min-width:0}.mini-item{width:34px;height:34px;object-fit:contain;flex:0 0 34px;border-radius:7px;background:#0d1724;border:1px solid #29394d;padding:2px}.mini-fallback{display:grid;place-items:center;font-size:19px;color:#9fc9e8}.book-panel{grid-column:1/-1;margin-top:14px}.book-controls{display:flex;gap:10px;margin:14px 0}.book-controls input,.book-controls select{background:#0c1521;border:1px solid #34475e;border-radius:9px;color:var(--text);padding:10px 12px;min-width:0}.book-controls input{flex:1}.book-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.book-item{display:flex;align-items:center;gap:9px;text-align:left;background:#0e1825;border:1px solid #29394d;border-radius:11px;padding:9px;min-width:0}.book-item.unowned{opacity:.68}.book-item.book-shiny{border-color:#c5a0ff;background:linear-gradient(120deg,#2d2440,#132536 65%,#44321c);box-shadow:inset 0 0 0 1px #c5a0ff55}.book-item.book-shiny strong{color:#e3c8ff;text-shadow:0 0 12px #c5a0ff55}.book-item strong{font-size:12px;display:block;overflow-wrap:anywhere}.book-item small{display:block;color:var(--muted);font-size:10px;margin-top:4px}.book-count{color:var(--gold);font-size:12px;white-space:nowrap;font-weight:800}.book-note{font-size:11px;color:var(--muted);margin-top:12px;line-height:1.5}.owned-mark{color:#8de6b5;font-size:11px}@media(max-width:650px){.book-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.book-controls{flex-direction:column}}.history-row:last-child,.collection-row:last-child{border-bottom:0}.muted{color:var(--muted)}.points{color:var(--gold);font-weight:800;white-space:nowrap}.empty{color:var(--muted);font-size:13px;padding:15px 0}.legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.legend span{font-size:11px;color:var(--muted)}.foot{max-width:760px;margin:20px auto;color:#8497ad;font-size:11px;line-height:1.6;text-align:center}button.secondary{background:#202e40;border:1px solid #3a4b60;border-radius:9px;padding:7px 10px;color:#d6e5f7;cursor:pointer;font-size:11px}.controls{display:flex;justify-content:space-between;align-items:center;gap:8px}.roulette-wrap{display:none;position:relative;overflow:hidden;height:150px;margin:0 0 18px;border:1px solid #38516b;border-radius:14px;background:linear-gradient(90deg,#0b1420,#182a3d,#0b1420)}
+.roulette-wrap.active{display:block}.roulette-wrap:before{content:"";position:absolute;z-index:3;left:50%;top:0;bottom:0;width:3px;transform:translateX(-50%);background:var(--gold);box-shadow:0 0 16px #ffc857aa}
+.roulette-track{display:flex;align-items:center;gap:8px;height:100%;padding:12px;will-change:transform}
+.roulette-tile{flex:0 0 112px;height:118px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;border:1px solid #344b62;border-radius:10px;background:#111e2d;text-align:center;padding:7px;overflow:hidden}
+.roulette-tile img{width:58px;height:58px;object-fit:contain;display:block}.roulette-tile .tile-icon{font-size:38px;line-height:1}.roulette-tile small{font-size:10px;color:#c8d9ed;max-width:100%;overflow-wrap:anywhere}
+.roll-card.reveal .relic{animation:resultPop .45s cubic-bezier(.2,1.7,.4,1) both}.roll-card.reveal .result-name{animation:resultGlow .7s ease-out both}
+@keyframes resultPop{0%{transform:scale(.88);filter:brightness(1)}65%{transform:scale(1.045);filter:brightness(1.7)}100%{transform:scale(1);filter:brightness(1)}}
+@keyframes resultGlow{0%{text-shadow:0 0 0 transparent;transform:scale(.92)}60%{text-shadow:0 0 24px #6de4ff;transform:scale(1.05)}100%{text-shadow:0 0 8px #6de4ff55;transform:scale(1)}}
+#shareBtn{display:inline-block;margin-left:8px}
+@media(max-width:650px){#shareBtn{margin-left:0;width:100%}.roulette-tile{flex-basis:100px}}
+.result-placeholder{color:#9cb2c8;font-size:14px;z-index:1}.roll-card.spinning .cube{animation:spinPulse .18s linear infinite}.roll-card.spinning .result-name{filter:blur(.4px);color:var(--cyan)}@keyframes spinPulse{0%{transform:rotate(-8deg) scale(.96);opacity:.65}50%{transform:rotate(8deg) scale(1.08);opacity:1}100%{transform:rotate(-8deg) scale(.96);opacity:.65}} @media(max-width:650px){.layout{grid-template-columns:1fr}.stats{gap:6px}.stat{padding:11px 6px}.stat strong{font-size:20px}.roll-card{padding:14px}.hero{padding-top:28px}}
+</style></head><body><main class="wrap"><div class="top"><div class="brand">⛏ MHdle / HAVEN DAILY ROLL</div><div class="pill" id="datePill">DAILY RESET • 12:00 AM UTC</div></div><header class="hero"><div class="eyebrow">One roll. Every day.</div><h1>MHdle - Haven Daily Roll</h1><p>Roll one Miner's Haven upgrader each day. Build your collection, fill your Book of Knowledge, earn Shards, and chase rare shiny drops.</p><div class="stats"><div class="stat"><strong id="totalRolls">0</strong><span>Total rolls</span></div><div class="stat"><strong id="totalPoints">0</strong><span>Shards</span></div><div class="stat"><strong id="uniqueCount">0</strong><span>Unique pulls</span></div></div></header>
+<section class="timer-panel" aria-live="polite"><div><div class="timer-caption">Next daily roll · 12:00 AM UTC</div><div class="muted" id="timerDate">Calculating reset…</div></div><div class="timer-value" id="countdown">--:--:--</div></section>
+<section class="roll-card"><div class="roulette-wrap" id="rouletteWrap" aria-hidden="true"><div class="roulette-track" id="rouletteTrack"></div></div><div class="relic"><div class="cube" id="cube">◇</div><img class="item-image" id="itemImage" alt="Miner’s Haven item image"><div class="result-placeholder" id="placeholder">YOUR NEXT DROP AWAITS</div></div><div class="eyebrow" id="resultTier">DAILY DROP</div><div class="result-name" id="resultName">Ready to roll?</div><div class="result-meta" id="resultTags"><span class="tag">1 roll per day</span></div><p class="desc" id="resultDesc">Your roll is saved in this browser. Come back after the next daily reset to roll again.</p><a class="item-source" id="wikiLink" href="https://minershaven.fandom.com/wiki/Upgraders" target="_blank" rel="noopener">Browse the Miners Haven Wiki ↗</a><br><div class="roll-actions"><button class="rollbtn" id="rollBtn">✦ ROLL TODAY'S UPGRADER</button>
+<button class="secondary" id="shareBtn" type="button" style="margin-top:0;padding:12px 16px;font-size:13px">Share result</button></div><div class="subnote" id="rollNote">Shiny chance: 1/100 on eligible items • Limited shiny chance: 1/100 where applicable</div></section>
+<div class="layout"><section class="panel"><div class="controls"><h2>Recent rolls</h2><button class="secondary" id="clearHistory">Clear history</button></div><div id="history"><div class="empty">Your daily rolls will appear here.</div></div></section><section class="panel"><h2>Collection</h2><div id="collection"><div class="empty">Collect an item to start your collection.</div></div><div class="legend"><span>Shards scale sharply with rarity</span><span>•</span><span>Shinies use a color treatment and earn bonus Shards</span></div></section></div>
+<section class="panel book-panel" aria-labelledby="bookHeading">
+  <h2 id="bookHeading">Book of Knowledge</h2>
+  <div class="muted" id="bookCount" aria-live="polite">0 discovered</div>
+  <div class="book-controls">
+    <input id="bookSearch" type="search" placeholder="Search items or tiers…" aria-label="Search Book of Knowledge">
+    <select id="bookFilter" aria-label="Filter Book of Knowledge">
+      <option value="all">All items</option>
+      <option value="owned">Discovered</option>
+      <option value="missing">Not discovered</option>
+      <option value="shiny">Shiny variants</option>
+      <option value="limited">Limited items</option>
+    </select>
+  </div>
+  <div class="book-grid" id="bookGrid">
+    <div class="empty">Your Book of Knowledge will appear here.</div>
+  </div>
+  <p class="book-note">Discover items by rolling them. Search by item name or tier, or filter to see discovered, missing, shiny, and limited entries.</p>
+</section>
+<p class="foot">Fan-made MHdle daily-roll mini-game inspired by Miners Haven. Item names and known shiny pairings are based on community wiki references; this is not affiliated with Roblox or the game's creators. The 1/100 shiny odds are a custom game rule for this simulator, not a claim about the live game's actual drop mechanics. Daily rolls use this browser's local storage and reset at 12:00 AM UTC. Item thumbnails are requested from Miner's Haven Wiki pages when available.</p></main>
+<script>
+const items=[
+{name:"Banana Split Upgrader",tier:"Reborn",denom:5,points:32,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Banana Split Upgrader",limited:false}},
+{name:"Nature's Grip",tier:"Reborn",denom:15,points:13,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Nature's Grip",limited:false}},
+{name:"Quantum Ore Cleaner",tier:"Reborn",denom:15,points:13,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Quantum Ore Cleaner",limited:false}},
+{name:"Massive Diamond Mine",tier:"Reborn",denom:15,points:13,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Massive Diamond Mine",limited:false}},
+{name:"Frozen Justice",tier:"Reborn",denom:15,points:13,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Frozen Justice",limited:false}},
+{name:"Industrial Firecrystal Mine",tier:"Reborn",denom:15,points:13,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Industrial Firecrystal Mine",limited:false}},
+{name:"Sage Redeemer",tier:"Reborn",denom:15,points:13,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Sage Redeemer",limited:false}},
+{name:"Pizza Blaster",tier:"Reborn",denom:15,points:13,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Pizza Blaster",limited:false}},
+{name:"Astral Predictor",tier:"Reborn",denom:15,points:13,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Astral Predictor",limited:false}},
+{name:"Vortex Chamber",tier:"Reborn",denom:15,points:13,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Vortex Chamber",limited:false}},
+{name:"Wild Spore",tier:"Reborn",denom:17,points:11,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Wild Spore",limited:false}},
+{name:"Righteous Will",tier:"Reborn",denom:6,points:28,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Righteous Will",limited:false}},
+{name:"Ancient Temple",tier:"Reborn",denom:7,points:24,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Ancient Temple",limited:false}},
+{name:"Ore Sawmill",tier:"Reborn",denom:10,points:18,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Ore Sawmill",limited:false}},
+{name:"The Catalyst",tier:"Reborn",denom:12,points:15,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny The Catalyst",limited:false}},
+{name:"Azure Refiner",tier:"Reborn",denom:15,points:13,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Azure Refiner",limited:false}},
+{name:"Ore Illuminator",tier:"Reborn",denom:15,points:13,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Ore Illuminator",limited:false}},
+{name:"Flaming Schrodinger",tier:"Reborn",denom:16,points:12,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Flaming Schrodinger",limited:false}},
+{name:"Venomshank",tier:"Reborn",denom:3,points:50,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Venomshank",limited:false}},
+{name:"Tesla Resetter",tier:"Reborn",denom:18,points:11,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Tesla Resetter",limited:false}},
+{name:"Yunium Mine",tier:"Reborn",denom:17,points:11,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Yunium Mine",limited:false}},
+{name:"Big Bad Blaster",tier:"Reborn",denom:18,points:11,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Big Bad Blaster",limited:false}},
+{name:"Mineral Wheel",tier:"Reborn",denom:17,points:11,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Mineral Wheel",limited:false}},
+{name:"Clockwork",tier:"Reborn",denom:8,points:22,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Clockwork",limited:false}},
+{name:"Dreamer's Might",tier:"Reborn",denom:15,points:13,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Dreamer's Might",limited:false}},
+{name:"Big Bertha",tier:"Reborn",denom:19,points:10,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Big Bertha",limited:false}},
+{name:"Scorpium Mine",tier:"Reborn",denom:17,points:11,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Scorpium Mine",limited:false}},
+{name:"Newtonium Mine",tier:"Reborn",denom:18,points:11,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Newtonium Mine",limited:false}},
+{name:"Dreamer's Fright",tier:"Reborn",denom:18,points:11,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Dreamer's Fright",limited:false}},
+{name:"Plasma Scanner",tier:"Reborn",denom:19,points:10,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Plasma Scanner",limited:false}},
+{name:"Lightningbolt Refiner",tier:"Reborn",denom:18,points:11,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Lightningbolt Refiner",limited:false}},
+{name:"Green Tea Latte",tier:"Reborn",denom:10,points:18,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Green Tea Latte",limited:false}},
+{name:"Scorching Heat",tier:"Reborn",denom:10,points:18,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Scorching Heat",limited:false}},
+{name:"The Fracture",tier:"Reborn",denom:4,points:39,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny The Fracture",limited:false}},
+{name:"Solar Flare",tier:"Reborn",denom:18,points:11,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Solar Flare",limited:false}},
+{name:"Atomium Mine",tier:"Reborn",denom:12,points:15,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Atomium Mine",limited:false}},
+{name:"Dark Magic",tier:"Reborn",denom:18,points:11,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Dark Magic",limited:false}},
+{name:"Eternal Journey",tier:"Reborn",denom:10,points:18,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Eternal Journey",limited:false}},
+{name:"Toxic Waste Disposal",tier:"Reborn",denom:13,points:14,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Toxic Waste Disposal",limited:false}},
+{name:"Blind Justice",tier:"Reborn",denom:7,points:24,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Blind Justice",limited:false}},
+{name:"Cooling Chamber",tier:"Reborn",denom:8,points:22,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Cooling Chamber",limited:false}},
+{name:"Atlantic Monolith",tier:"Reborn",denom:10,points:18,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Atlantic Monolith",limited:false}},
+{name:"Dragonglass Mine",tier:"Reborn",denom:8,points:22,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Dragonglass Mine",limited:false}},
+{name:"Gate of Eclipse",tier:"Reborn",denom:15,points:13,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Gate of Eclipse",limited:false}},
+{name:"Timeless Enhancement",tier:"Reborn",denom:7,points:24,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Timeless Enhancement",limited:false}},
+{name:"Ambrosia Fountain",tier:"Reborn",denom:7,points:24,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Ambrosia Fountain",limited:false}},
+{name:"Dreamer's Anguish",tier:"Reborn",denom:3,points:50,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Dreamer's Anguish",limited:false}},
+{name:"Phase Refiner",tier:"Reborn",denom:7,points:24,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Phase Refiner",limited:false}},
+{name:"Pilotite Mine",tier:"Reborn",denom:13,points:14,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Pilotite Mine",limited:false}},
+{name:"Guardian of the Gate",tier:"Reborn",denom:5,points:32,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Guardian of the Gate",limited:false}},
+{name:"Morning Star",tier:"Reborn",denom:14,points:14,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Morning Star",limited:false}},
+{name:"Aether Refinery",tier:"Reborn",denom:5,points:32,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Aether Refinery",limited:false}},
+{name:"Symmetrium Mine",tier:"Reborn",denom:10,points:18,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Symmetrium Mine",limited:false}},
+{name:"Sakura Garden",tier:"Reborn",denom:3,points:50,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Sakura Garden",limited:false}},
+{name:"Invasive Cyberlord",tier:"Reborn",denom:10,points:18,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Invasive Cyberlord",limited:false}},
+{name:"The Sporest",tier:"Reborn",denom:8,points:22,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny The Sporest",limited:false}},
+{name:"Nuclear Stronghold",tier:"Reborn",denom:7,points:24,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Nuclear Stronghold",limited:false}},
+{name:"Phase Processor",tier:"Reborn",denom:7,points:24,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Phase Processor",limited:false}},
+{name:"Breech Loader",tier:"Reborn",denom:8,points:22,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Breech Loader",limited:false}},
+{name:"The Abomination",tier:"Reborn",denom:8,points:22,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny The Abomination",limited:false}},
+{name:"Crystallized System",tier:"Reborn",denom:12,points:15,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Crystallized System",limited:false}},
+{name:"Fractured Reality",tier:"Reborn",denom:5,points:32,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Fractured Reality",limited:false}},
+{name:"Ore Skillet",tier:"Reborn",denom:11,points:17,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Ore Skillet",limited:false}},
+{name:"Gravitational Gearwork",tier:"Reborn",denom:13,points:14,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Gravitational Gearwork",limited:false}},
+{name:"Shard Park",tier:"Reborn",denom:9,points:20,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Shard Park",limited:false}},
+{name:"Newtonic Corroder",tier:"Reborn",denom:10,points:18,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Newtonic Corroder",limited:false}},
+{name:"Red Giant",tier:"Reborn",denom:14,points:14,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Red Giant",limited:false}},
+{name:"Skyliner Flux",tier:"Reborn",denom:7,points:24,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Skyliner Flux",limited:false}},
+{name:"Combustion Engine",tier:"Reborn",denom:5,points:32,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Combustion Engine",limited:false}},
+{name:"Industrial Scarab",tier:"Reborn",denom:3,points:50,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Industrial Scarab",limited:false}},
+{name:"Esoteric Citadel",tier:"Reborn",denom:3,points:50,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Esoteric Citadel",limited:false}},
+{name:"Desert Monument",tier:"Reborn",denom:1,points:128,desc:"Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Desert Monument",limited:false}},
+{name:"Dragon Blaster",tier:"Advanced Reborn",denom:3,points:50,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Dragon Blaster",limited:false}},
+{name:"Frigid Dystopia",tier:"Advanced Reborn",denom:3,points:50,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Frigid Dystopia",limited:false}},
+{name:"Precursor Furnace",tier:"Advanced Reborn",denom:3,points:50,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Precursor Furnace",limited:false}},
+{name:"Precursor Mine",tier:"Advanced Reborn",denom:3,points:50,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Precursor Mine",limited:false}},
+{name:"Vampire Spore",tier:"Advanced Reborn",denom:1,points:128,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Vampire Spore",limited:false}},
+{name:"Vulcan's Grasp",tier:"Advanced Reborn",denom:1,points:128,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Vulcan's Grasp",limited:false}},
+{name:"Stardust Pulsar",tier:"Advanced Reborn",denom:2,points:71,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Stardust Pulsar",limited:false}},
+{name:"Hades' Palace",tier:"Advanced Reborn",denom:3,points:50,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Hades' Palace",limited:false}},
+{name:"Sword God Shrine",tier:"Advanced Reborn",denom:1,points:128,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Sword God Shrine",limited:false}},
+{name:"Igneous Forge",tier:"Advanced Reborn",denom:3,points:50,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Igneous Forge",limited:false}},
+{name:"Stellarite Mine",tier:"Decimal Reborn",denom:0.5,points:230,desc:"Decimal Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Stellarite Mine",limited:false}},
+{name:"Funky Town",tier:"Decimal Reborn",denom:0.25,points:415,desc:"Decimal Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Funky Town",limited:false}},
+{name:"Meatball Sandwich",tier:"Decimal Reborn",denom:0.35,points:311,desc:"Decimal Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Meatball Sandwich",limited:false}},
+{name:"Ore Memer",tier:"Decimal Reborn",denom:0.1,points:903,desc:"Decimal Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Ore Memer",limited:false}},
+{name:"King Gold Mine",tier:"Decimal Reborn",denom:0.25,points:415,desc:"Decimal Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny King Gold Mine",limited:false}},
+{name:"Soul Blossom",tier:"Decimal Reborn",denom:0.4,points:278,desc:"Decimal Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Soul Blossom",limited:false}},
+{name:"Overlord Device",tier:"Ultimate",denom:1,points:128,desc:"Ultimate item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Overlord Device",limited:false}},
+{name:"True Overlord Device",tier:"Ultimate",denom:1,points:128,desc:"Ultimate item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny True Overlord Device",limited:false}},
+{name:"Spooklord Device",tier:"Ultimate",denom:1,points:128,desc:"Ultimate item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Spooklord Device",limited:false}},
+{name:"Temporal Armageddon",tier:"Slipstream",denom:1,points:128,desc:"Slipstream item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Temporal Armageddon",limited:false}},
+{name:"Ore Supernova",tier:"Advanced Reborn",denom:2,points:71,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Ore Supernova",limited:false}},
+{name:"Apollium Mine",tier:"Advanced Reborn",denom:2,points:71,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Apollium Mine",limited:false}},
+{name:"Dreamer's Blight",tier:"Advanced Reborn",denom:2,points:71,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Dreamer's Blight",limited:false}},
+{name:"Father of Freon",tier:"Advanced Reborn",denom:2,points:71,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Father of Freon",limited:false}},
+{name:"Son of Poison",tier:"Advanced Reborn",denom:2,points:71,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Son of Poison",limited:false}},
+{name:"Spirit of Fire",tier:"Advanced Reborn",denom:2,points:71,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Spirit of Fire",limited:false}},
+{name:"Interstellar Conqueror",tier:"Advanced Reborn",denom:2,points:71,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Interstellar Conqueror",limited:false}},
+{name:"Black Dwarf",tier:"Advanced Reborn",denom:2,points:71,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Black Dwarf",limited:false}},
+{name:"Arcane Lightning",tier:"Advanced Reborn",denom:2,points:71,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Arcane Lightning",limited:false}},
+{name:"Australis Fornacem",tier:"Advanced Reborn",denom:2,points:71,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Australis Fornacem",limited:false}},
+{name:"Blue Supergiant",tier:"Advanced Reborn",denom:2,points:71,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Blue Supergiant",limited:false}},
+{name:"Burst Refiner",tier:"Advanced Reborn",denom:2,points:71,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Burst Refiner",limited:false}},
+{name:"Crystal Shrine",tier:"Advanced Reborn",denom:2,points:71,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Crystal Shrine",limited:false}},
+{name:"Dystopian Refiner",tier:"Advanced Reborn",denom:2,points:71,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Dystopian Refiner",limited:false}},
+{name:"Everlasting Key",tier:"Advanced Reborn",denom:2,points:71,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Everlasting Key",limited:false}},
+{name:"Grimstruct",tier:"Advanced Reborn",denom:2,points:71,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Grimstruct",limited:false}},
+{name:"Ice Crusher",tier:"Advanced Reborn",denom:2,points:71,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Ice Crusher",limited:false}},
+{name:"Incendium Mine",tier:"Advanced Reborn",denom:2,points:71,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Incendium Mine",limited:false}},
+{name:"Neutropian Refiner",tier:"Advanced Reborn",denom:2,points:71,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Neutropian Refiner",limited:false}},
+{name:"Nova Star",tier:"Advanced Reborn",denom:2,points:71,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Nova Star",limited:false}},
+{name:"Oblivion Weaver",tier:"Advanced Reborn",denom:2,points:71,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Oblivion Weaver",limited:false}},
+{name:"Ooftopian Refiner",tier:"Advanced Reborn",denom:2,points:71,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Ooftopian Refiner",limited:false}},
+{name:"Palladium Drill",tier:"Advanced Reborn",denom:2,points:71,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Palladium Drill",limited:false}},
+{name:"Pulsar Octagnium Mine",tier:"Advanced Reborn",denom:2,points:71,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Pulsar Octagnium Mine",limited:false}},
+{name:"Railgun Cannon",tier:"Advanced Reborn",denom:2,points:71,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Railgun Cannon",limited:false}},
+{name:"Sinister Sepulcher",tier:"Advanced Reborn",denom:2,points:71,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Sinister Sepulcher",limited:false}},
+{name:"Behemoth Blossom",tier:"Advanced Reborn",denom:2,points:71,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Behemoth Blossom",limited:false}},
+{name:"Orbital Cataclysm",tier:"Advanced Reborn",denom:2,points:71,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Orbital Cataclysm",limited:false}},
+{name:"Big Alberto",tier:"Advanced Reborn",denom:2,points:71,desc:"Advanced Reborn item obtainable through rebirthing in Miner's Haven.",icon:'✦',shiny:{name:"Shiny Big Alberto",limited:false}},
+];
+const KEY='havenDailyRollV1';
+const PROFILE_KEY='havenDailyRollProfileV1';
+let profileId=localStorage.getItem(PROFILE_KEY);if(!profileId){profileId=(crypto.randomUUID?crypto.randomUUID():Array.from(crypto.getRandomValues(new Uint32Array(4))).map(x=>x.toString(16)).join('-'));localStorage.setItem(PROFILE_KEY,profileId)}
+function randomUnit(){if(crypto&&crypto.getRandomValues){const a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]/4294967296}return Math.random()}
+const STORAGE_KEY=KEY+':'+profileId;
+// The daily cycle uses the UTC calendar date and resets exactly at 00:00 UTC.
+function utcToday(date=new Date()){return date.toISOString().slice(0,10)}
+const today=()=>utcToday();
+function dailyKey(){return utcToday()}
+function updateCountdown(){const now=new Date();const target=Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate()+1,0,0,0);let seconds=Math.max(0,Math.floor((target-now.getTime())/1000));const h=Math.floor(seconds/3600);seconds%=3600;const m=Math.floor(seconds/60);const sec=seconds%60;document.getElementById('countdown').textContent=[h,m,sec].map(v=>String(v).padStart(2,'0')).join(':');document.getElementById('timerDate').textContent='Resets at 12:00 AM UTC · '+new Intl.DateTimeFormat('en-US',{timeZone:'UTC',weekday:'short',month:'short',day:'numeric'}).format(new Date(target));}
+let state=JSON.parse(localStorage.getItem(STORAGE_KEY)||localStorage.getItem(KEY)||'{"lastDate":"","history":[],"collection":{}}');
+function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state));render()}
+const wikiTitles={'Large Ore Upgrader':'Large_Ore_Upgrader','Spectral Upgrader':'Spectral_Upgrader','Shiny Red Upgrader':'Shiny_Red_Upgrader','Banana Split Upgrader':'Banana_Split_Upgrader',"Nature's Grip":'Nature%27s_Grip','Quantum Ore Cleaner':'Quantum_Ore_Cleaner','Massive Diamond Mine':'Massive_Diamond_Mine','Frozen Justice':'Frozen_Justice','Sage Redeemer':'Sage_Redeemer','Pizza Blaster':'Pizza_Blaster','Astral Predictor':'Astral_Predictor','Stellarite Mine':'Stellarite_Mine','Funky Town':'Funky_Town','King Gold Mine':'King_Gold_Mine','The Grand Banana':'The_Grand_Banana','Wedding Cake':'Wedding_Cake','Glass Butterfly':'Glass_Butterfly','Carrot Village':'Carrot_Village','Rose Palace':'Rose_Palace','Overlord Device':'Overlord_Device','True Overlord Device':'True_Overlord_Device','Quantum Clockwork':'Quantum_Clockwork','The Grand Prism':'The_Grand_Prism','Northern Lights':'Northern_Lights'};
+const imageCache={};
+async function loadWikiImage(itemName){
+  const img=document.getElementById('itemImage'),cube=document.getElementById('cube');
+  const clean=String(itemName).replace(/^✦\\s*|\\s*✦$/g,'');
+  const baseName=clean.replace(/^⭐\\s*/,'').replace(/\\s*⭐$/,'').replace(/^(Shiny|Mint|Dawn|Alpha|Dreamy|Ashen|Wealthy|Void|Storm|Eldritch|Swag|Ascended|Unripe|Moth|Parsnip|Bitter)\\s+/,'');
+  const title=wikiTitles[baseName]||baseName.replace(/ /g,'_').replace(/'/g,'%27');
+  document.getElementById('wikiLink').href='https://minershaven.fandom.com/wiki/'+title;
+  img.style.display='none';cube.style.display='block';img.removeAttribute('src');
+  const showImage=url=>new Promise(resolve=>{
+    img.onload=()=>{img.style.display='block';cube.style.display='none';resolve(true)};
+    img.onerror=()=>{img.style.display='none';cube.style.display='block';resolve(false)};
+    img.src=url;
+  });
+  if(imageCache[title]&&imageCache[title].image&&await showImage(imageCache[title].image))return;
+  try{
+    const response=await fetch('https://minershaven.fandom.com/api.php?action=query&format=json&origin=*&redirects=1&prop=pageimages&piprop=thumbnail&pithumbsize=500&titles='+encodeURIComponent(title));
+    if(response.ok){
+      const data=await response.json(),pageData=Object.values(data.query.pages||{})[0];
+      const image=pageData&&pageData.thumbnail&&pageData.thumbnail.source;
+      if(image){imageCache[title]={image};if(await showImage(image))return}
+    }
+  }catch(e){}
+  const fallback='https://minershaven.fandom.com/wiki/Special:FilePath/'+encodeURIComponent(baseName.replace(/ /g,'_'))+'?width=500';
+  const ok=await showImage(fallback);
+  imageCache[title]={image:ok?fallback:null};
+}
+
+function weightedPick(){const weights=items.map(i=>Math.pow(1/Math.max(i.denom,0.1),0.72));const sum=weights.reduce((a,b)=>a+b,0);let r=randomUnit()*sum;for(let i=0;i<items.length;i++){r-=weights[i];if(r<=0)return items[i]}return items[0]}
+
+let rolling=false;
+let rollAudioContext=null;
+function playRebirthReveal(){
+  // A short, bright reveal chime inspired by the triumphant feel of a rebirth.
+  // This is synthesized locally; the official Miner's Haven sound file wasn't available to verify/use.
+  try{
+    const AudioContextClass=window.AudioContext||window.webkitAudioContext;
+    if(!AudioContextClass)return;
+    if(!rollAudioContext)rollAudioContext=new AudioContextClass();
+    const ctx=rollAudioContext;
+    if(ctx.state==='suspended')ctx.resume();
+    const now=ctx.currentTime;
+    [[392,0],[523.25,.09],[659.25,.18],[783.99,.29]].forEach(([frequency,delay],index)=>{
+      const osc=ctx.createOscillator(),gain=ctx.createGain();
+      osc.type=index===3?'sine':'triangle';
+      osc.frequency.setValueAtTime(frequency,now+delay);
+      gain.gain.setValueAtTime(0.0001,now+delay);
+      gain.gain.exponentialRampToValueAtTime(index===3?0.13:0.075,now+delay+0.018);
+      gain.gain.exponentialRampToValueAtTime(0.0001,now+delay+0.48);
+      osc.connect(gain);gain.connect(ctx.destination);
+      osc.start(now+delay);osc.stop(now+delay+0.5);
+    });
+  }catch(e){}
+}
+function roll(){
+  if(state.lastDate===dailyKey()||rolling)return;
+  const base=weightedPick();
+  let variant='Normal',earned=base.points;
+  if(base.shiny&&randomUnit()<.01){variant='Shiny';earned=Math.round(base.points*3)}
+  const picked={...base,variant,finalName:base.name,displayName:variant==='Shiny'?'✦ '+base.name+' ✦':base.name,earned,date:today()};
+  state.lastDate=dailyKey();state.history.unshift(picked);state.history=state.history.slice(0,100);
+  let c=state.collection[base.name]||{name:base.name,count:0,points:0,tier:base.tier,shiny:false};
+  c.count++;c.points+=earned;c.tier=base.tier;if(variant==='Shiny')c.shiny=true;state.collection[base.name]=c;save();
+}
+function makeRouletteTile(item){
+  const tile=document.createElement('div');tile.className='roulette-tile';
+  const img=document.createElement('img');img.alt='';img.loading='eager';img.style.display='none';
+  const icon=document.createElement('div');icon.className='tile-icon';icon.textContent=item.icon||'✦';
+  tile.appendChild(img);tile.appendChild(icon);
+  const label=document.createElement('small');label.textContent=item.name;tile.appendChild(label);
+  fetchThumbnail(item.name).then(url=>{if(url){img.onload=()=>{img.style.display='block';icon.style.display='none'};img.onerror=()=>{img.style.display='none';icon.style.display='block'};img.src=url}}).catch(()=>{img.style.display='none';icon.style.display='block'});
+  return tile;
+}
+function waitForImage(img,timeout=2600){
+  if(img.complete&&img.naturalWidth>0)return Promise.resolve(true);
+  return new Promise(resolve=>{
+    let done=false;
+    const finish=ok=>{if(done)return;done=true;clearTimeout(timer);img.removeEventListener('load',onload);img.removeEventListener('error',onerror);resolve(ok)};
+    const onload=()=>finish(img.naturalWidth>0),onerror=()=>finish(false);
+    const timer=setTimeout(()=>finish(false),timeout);
+    img.addEventListener('load',onload,{once:true});img.addEventListener('error',onerror,{once:true});
+  });
+}
+async function preloadRouletteImages(track){
+  const imgs=[...track.querySelectorAll('img')];
+  await Promise.all(imgs.map(img=>waitForImage(img)));
+}
+async function animateRoll(){
+  if(state.lastDate===dailyKey()||rolling)return;
+  rolling=true;
+  const card=document.querySelector('.roll-card'),wrap=document.getElementById('rouletteWrap'),track=document.getElementById('rouletteTrack');
+  const btn=document.getElementById('rollBtn'),share=document.getElementById('shareBtn');
+  const originalLabel=btn.textContent;
+  btn.disabled=true;btn.textContent='Rolling...';if(share)share.disabled=true;
+  card.classList.remove('reveal');
+  const relic=document.querySelector('.relic');
+  if(relic&&!relic.contains(wrap))relic.appendChild(wrap);
+  wrap.classList.add('active');track.innerHTML='';
+  const winner=weightedPick(),sequence=Array.from({length:44},()=>items[Math.floor(randomUnit()*items.length)]);
+  const winnerIndex=39;sequence[winnerIndex]=winner;sequence.forEach(item=>track.appendChild(makeRouletteTile(item)));
+  // Let browser paint the loading label, then wait for the roulette thumbnails before moving.
+  await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+  await preloadRouletteImages(track);
+  btn.textContent=originalLabel;
+  const tileWidth=120,targetX=Math.max(0,winnerIndex*tileWidth+tileWidth/2-wrap.clientWidth/2);
+  track.style.transition='none';track.style.transform='translateX(0)';void track.offsetWidth;
+  const duration=5600;track.style.transition=`transform ${duration}ms cubic-bezier(.08,.72,.08,1)`;track.style.transform=`translateX(-${targetX}px)`;
+  let finished=false;
+  const finish=()=>{
+    if(finished)return;finished=true;track.removeEventListener('transitionend',onEnd);wrap.classList.remove('active');
+    track.style.transition='none';track.style.transform='translateX(0)';rolling=false;btn.textContent=originalLabel;
+    // Commit the exact item shown at the center marker.
+    let variant='Normal',earned=winner.points;
+    if(winner.shiny&&randomUnit()<.01){variant='Shiny';earned=Math.round(winner.points*3)}
+    const picked={...winner,variant,finalName:winner.name,displayName:variant==='Shiny'?'✦ '+winner.name+' ✦':winner.name,earned,date:today()};
+    state.lastDate=dailyKey();state.history.unshift(picked);state.history=state.history.slice(0,100);
+    let c=state.collection[winner.name]||{name:winner.name,count:0,points:0,tier:winner.tier,shiny:false};
+    c.count++;c.points+=earned;c.tier=winner.tier;if(variant==='Shiny')c.shiny=true;state.collection[winner.name]=c;save();
+    render();card.classList.remove('reveal');void card.offsetWidth;card.classList.add('reveal');playRebirthReveal();
+    btn.disabled=true;if(share)share.disabled=false;
+  };
+  const onEnd=e=>{if(e.propertyName==='transform')finish()};
+  track.addEventListener('transitionend',onEnd);setTimeout(finish,duration+250);
+}
+async function shareResult(){
+  const btn=document.getElementById('shareBtn'),last=state.history[0];
+  if(!last){btn.textContent='Roll first!';setTimeout(()=>btn.textContent='Share result',1400);return}
+  const itemName=(last.displayName||last.finalName||'Unknown item').replace(/^✦\s*|\s*✦$/g,'');
+  const text=`🎁 MHdle — Haven Daily Roll
+Item: ${itemName}
+Tier: ${last.tier}
+Variant: ${last.variant||'Normal'}
+Reward: +${Number(last.earned||0).toLocaleString()} Shards`;
+  try{
+    if(navigator.clipboard&&navigator.clipboard.writeText)await navigator.clipboard.writeText(text);
+    else {const area=document.createElement('textarea');area.value=text;area.style.position='fixed';area.style.opacity='0';document.body.appendChild(area);area.select();const ok=document.execCommand('copy');area.remove();if(!ok)throw new Error('Clipboard copy failed')}
+    btn.textContent='Copied!';setTimeout(()=>{btn.textContent='Share result'},1800);
+  }catch(e){btn.textContent='Copy failed';setTimeout(()=>{btn.textContent='Share result'},1800)}
+}
+
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+
+function catalogItems(){return items.map(it=>({...it,catalogName:it.name,catalogVariant:'Normal'}))}
+
+const thumbnailCache={};
+function wikiPageFor(name){let base=name.replace(/^⭐\s*/,'').replace(/\s*⭐$/,'');const prefixes=['Mint ','Dawn ','Alpha ','Dreamy ','Ashen ','Wealthy ','Void ','Storm ','Eldritch ','Swag ','Ascended ','Unripe ','Moth ','Parsnip ','Bitter ','Shiny '];for(const prefix of prefixes){if(base.startsWith(prefix)){base=base.slice(prefix.length);break}}if(base==='Cupid’s Crystallized System')base='Crystallized System';if(base==='Darkseed Pumpkin Hut')base='Darkseed Pumpkin Hut';return 'https://minershaven.fandom.com/wiki/'+(wikiTitles[base]||base.replace(/ /g,'_').replace(/'/g,'%27'))}
+async function fetchThumbnail(name){
+  const pageUrl=wikiPageFor(name),title=decodeURIComponent(pageUrl.split('/wiki/')[1]||'');
+  if(thumbnailCache[title]!==undefined)return await thumbnailCache[title];
+  const clean=String(name).replace(/^✦\s*|\s*✦$/g,'').replace(/^⭐\s*|\s*⭐$/g,'')
+    .replace(/^(Mint|Dawn|Alpha|Dreamy|Ashen|Wealthy|Void|Storm|Eldritch|Swag|Ascended|Unripe|Moth|Parsnip|Bitter|Shiny)\s+/,'');
+  thumbnailCache[title]=(async()=>{
+    const api='https://minershaven.fandom.com/api.php?action=query&format=json&origin=*&redirects=1&prop=pageimages&piprop=thumbnail&pithumbsize=240&titles=';
+    const getImage=async t=>{
+      try{const r=await fetch(api+encodeURIComponent(t));if(!r.ok)return null;const d=await r.json();const p=Object.values(d.query?.pages||{})[0];return p?.thumbnail?.source||null}catch(e){return null}
+    };
+    let image=await getImage(title);
+    if(image)return image;
+    // Keep fallback lookup lightweight; avoid a second API search for every image.
+    return 'https://minershaven.fandom.com/wiki/Special:FilePath/'+encodeURIComponent(clean.replace(/ /g,'_'))+'?width=240';
+  })();
+  return await thumbnailCache[title];
+}
+// Thumbnails are fetched through a small queue rather than hundreds of simultaneous
+// wiki API requests. The previous double-render could also attach competing handlers
+// to the same image during the initial page load.
+async function loadListImages(){
+  // A render can create many thumbnails. Only process each live image once, and
+  // don't give the browser an empty src (which can trigger a premature error).
+  const imgs=[...document.querySelectorAll('img[data-item]')].filter(img=>img.isConnected&&!img.dataset.thumbStarted&&!img.dataset.thumbLoaded);
+  imgs.forEach(img=>{img.dataset.thumbStarted='1';img.style.opacity='0'});
+  let next=0;
+  async function worker(){
+    while(next<imgs.length){
+      const img=imgs[next++];
+      if(!img.isConnected)continue;
+      let timeoutId;
+      try{
+        const url=await fetchThumbnail(img.dataset.item);
+        if(!url||!img.isConnected){delete img.dataset.thumbStarted;continue}
+        const loaded=await new Promise(resolve=>{
+          let finished=false;
+          const finish=ok=>{
+            if(finished)return;finished=true;clearTimeout(timeoutId);
+            img.removeEventListener('load',onload);img.removeEventListener('error',onerror);
+            if(ok){img.style.display='block';img.style.opacity='1';img.dataset.thumbLoaded='1'}
+            else{img.style.display='none';delete img.dataset.thumbStarted}
+            resolve(ok);
+          };
+          const onload=()=>finish(img.naturalWidth>0);
+          const onerror=()=>finish(false);
+          img.addEventListener('load',onload,{once:true});
+          img.addEventListener('error',onerror,{once:true});
+          timeoutId=setTimeout(()=>finish(false),10000);
+          img.src=url;
+          if(img.complete)finish(img.naturalWidth>0);
+        });
+        // If this was a Book of Knowledge image and loading failed, provide the
+        // same visible fallback icon as the inline error handler.
+        if(!loaded&&img.isConnected&&img.closest('#bookGrid')&&!img.nextElementSibling?.classList.contains('mini-fallback')){
+          const fallback=document.createElement('span');fallback.className='mini-item mini-fallback';fallback.textContent='✦';img.after(fallback);
+        }
+      }catch(e){img.style.display='none';delete img.dataset.thumbStarted}
+    }
+  }
+  await Promise.all(Array.from({length:Math.min(4,imgs.length)},()=>worker()));
+}
+function renderBook(){const catalog=catalogItems(),owned=state.collection||{},search=(document.getElementById('bookSearch')?.value||'').trim().toLowerCase(),filter=document.getElementById('bookFilter')?.value||'all';const discovered=catalog.filter(it=>owned[it.catalogName]).length;document.getElementById('bookCount').textContent=`${discovered} / ${catalog.length} discovered`;const shown=catalog.filter(it=>{const has=!!owned[it.catalogName];if(search&&!it.catalogName.toLowerCase().includes(search)&&!it.tier.toLowerCase().includes(search))return false;if(filter==='owned'&&!has)return false;if(filter==='missing'&&has)return false;if(filter==='shiny'&&!it.shiny)return false;if(filter==='limited'&&it.catalogVariant!=='Limited Shiny'&&it.tier!=='Limited Reborn')return false;return true});const grid=document.getElementById('bookGrid');grid.innerHTML=shown.map(it=>{const has=!!owned[it.catalogName],variant=it.catalogVariant;return `<div class="book-item ${has?'':'unowned'} ${has&&owned[it.catalogName].shiny?'book-shiny':''}"><img class="mini-item" data-item="${esc(it.catalogName)}" alt="${esc(it.catalogName)}" onerror="this.style.display='none';if(!this.nextElementSibling||!this.nextElementSibling.classList.contains('mini-fallback')){const f=document.createElement('span');f.className='mini-item mini-fallback';f.textContent='✦';this.after(f)}"><div><strong>${esc(it.catalogName)}</strong><small>${esc(it.tier)} · ${it.denom?`Base rarity 1/${it.denom}`:'Special'} · ${it.points} Shards</small><small class="${has?'owned-mark':''}">${has?`✓ Owned ×${owned[it.catalogName].count}${owned[it.catalogName].shiny?' · ✦ SHINY DISCOVERED':''}`:'◇ Not discovered'}</small></div></div>`}).join('')||'<div class="empty">No items match this filter.</div>';loadListImages()}
+function render(){let rolled=state.lastDate===dailyKey(),b=document.getElementById('rollBtn');b.disabled=rolled||rolling;b.textContent=rolled?'✓ TODAY’S ROLL COMPLETE':'✦ ROLL TODAY’S UPGRADER';document.getElementById('datePill').textContent='DAILY RESET • UTC DATE '+today();document.getElementById('totalRolls').textContent=state.history.length;document.getElementById('totalPoints').textContent=Object.values(state.collection).reduce((a,c)=>a+c.points,0).toLocaleString();document.getElementById('uniqueCount').textContent=Object.keys(state.collection).length;
+let last=state.history[0];if(last){document.getElementById('cube').textContent=last.icon||'◇';document.getElementById('placeholder').textContent='TODAY’S DROP';document.getElementById('resultTier').textContent=last.tier.toUpperCase();document.getElementById('resultName').textContent=last.displayName||last.finalName;document.getElementById('resultDesc').textContent=last.desc;loadWikiImage(last.finalName);document.getElementById('resultTags').innerHTML=`<span class="tag">${esc(last.tier)}</span><span class="tag ${last.variant==='Normal'?'':'shiny'} ${last.variant==='Limited Shiny'?'limited':''}">${esc(last.variant)}</span><span class="tag">+${last.earned} Shards</span><span class="tag">Base rarity 1/${last.denom}</span>`;}else{document.getElementById('cube').textContent='◇';document.getElementById('placeholder').textContent='YOUR NEXT DROP AWAITS';document.getElementById('resultTier').textContent='DAILY DROP';document.getElementById('resultName').textContent='Ready to roll?';document.getElementById('resultDesc').textContent='Your roll is saved in this browser. Come back after the next daily reset to roll again.';document.getElementById('itemImage').style.display='none';document.getElementById('cube').style.display='block';document.getElementById('wikiLink').href='https://minershaven.fandom.com/wiki/Upgraders';document.getElementById('resultTags').innerHTML='<span class="tag">1 roll per day</span>'}
+document.getElementById('history').innerHTML=state.history.length?state.history.slice(0,8).map((h,i)=>`<div class="history-row"><div class="item-line"><img class="mini-item" data-item="${esc(h.finalName)}" alt="" onerror="this.style.display='none'"><div><strong>${esc(h.displayName||h.finalName)}</strong><div class="muted">${esc(h.date)} · ${esc(h.variant)}</div></div></div><span class="points">+${h.earned} Shards</span></div>`).join(''):'<div class="empty">Your daily rolls will appear here.</div>';
+let cs=Object.values(state.collection).sort((a,b)=>b.points-a.points);document.getElementById('collection').innerHTML=cs.length?cs.slice(0,12).map(c=>`<div class="collection-row"><div class="item-line"><img class="mini-item" data-item="${esc(c.name)}" alt="" onerror="this.style.display='none'"><div><strong>${esc(c.name)}</strong><div class="muted">${esc(c.tier)} · owned ×${c.count}</div></div></div><span class="points">${c.points} Shards</span></div>`).join(''):'<div class="empty">Collect an item to start your collection.</div>';
+renderBook();}
+document.getElementById('bookSearch')?.addEventListener('input',renderBook);document.getElementById('bookFilter')?.addEventListener('change',renderBook);document.getElementById('rollBtn')?.addEventListener('click',animateRoll);document.getElementById('shareBtn')?.addEventListener('click',shareResult);document.getElementById('clearHistory').addEventListener('click',()=>{if(confirm('Clear your roll history? Your collection and points will remain.')){state.history=[];save()}});render();updateCountdown();setInterval(()=>{updateCountdown();if(state.lastDate!==dailyKey())render()},1000);
+</script></body></html>
+
+<style>
+.roll-actions{display:flex;flex-direction:column;align-items:stretch;gap:10px;width:100%;margin:12px 0 0}
+.roll-actions #rollBtn,.roll-actions #shareBtn{width:100%;margin-left:0}
+#shareBtn{display:block}
+.relic #rouletteWrap.roulette-wrap{position:absolute;inset:0;z-index:4;width:100%;height:100%;margin:0;border-radius:15px}
+.relic #rouletteWrap.roulette-wrap.active{display:block}
+.roulette-wrap.active{background:linear-gradient(90deg,#0b1420,#182a3d,#0b1420)}
+.roulette-tile img{width:58px;height:58px;object-fit:contain}
+.mini-item{opacity:.85}
+</style>
