@@ -12,6 +12,16 @@
 #shareBtn{display:inline-block;margin-left:8px}
 @media(max-width:650px){#shareBtn{margin-left:0;width:100%}.roulette-tile{flex-basis:100px}}
 .result-placeholder{color:#9cb2c8;font-size:14px;z-index:1}.roll-card.spinning .cube{animation:spinPulse .18s linear infinite}.roll-card.spinning .result-name{filter:blur(.4px);color:var(--cyan)}@keyframes spinPulse{0%{transform:rotate(-8deg) scale(.96);opacity:.65}50%{transform:rotate(8deg) scale(1.08);opacity:1}100%{transform:rotate(-8deg) scale(.96);opacity:.65}} @media(max-width:650px){.layout{grid-template-columns:1fr}.stats{gap:6px}.stat{padding:11px 6px}.stat strong{font-size:20px}.roll-card{padding:14px}.hero{padding-top:28px}}
+
+.roll-actions{display:flex;flex-direction:column;align-items:stretch;gap:10px;width:100%;margin:12px 0 0}
+.roll-actions #rollBtn,.roll-actions #shareBtn{width:100%;margin-left:0}
+#shareBtn{display:block}
+.relic #rouletteWrap.roulette-wrap{position:absolute;inset:0;z-index:4;width:100%;height:100%;margin:0;border-radius:15px}
+.relic #rouletteWrap.roulette-wrap.active{display:block}
+.roulette-wrap.active{background:linear-gradient(90deg,#0b1420,#182a3d,#0b1420)}
+.roulette-tile img{width:58px;height:58px;object-fit:contain}
+.mini-item{opacity:.85}
+
 </style></head><body><main class="wrap"><div class="top"><div class="brand">⛏ MHdle / HAVEN DAILY ROLL</div><div class="pill" id="datePill">DAILY RESET • 12:00 AM UTC</div></div><header class="hero"><div class="eyebrow">One roll. Every day.</div><h1>MHdle - Haven Daily Roll</h1><p>Roll one Miner's Haven upgrader each day. Build your collection, fill your Book of Knowledge, earn Shards, and chase rare shiny drops.</p><div class="stats"><div class="stat"><strong id="totalRolls">0</strong><span>Total rolls</span></div><div class="stat"><strong id="totalPoints">0</strong><span>Shards</span></div><div class="stat"><strong id="uniqueCount">0</strong><span>Unique pulls</span></div></div></header>
 <section class="timer-panel" aria-live="polite"><div><div class="timer-caption">Next daily roll · 12:00 AM UTC</div><div class="muted" id="timerDate">Calculating reset…</div></div><div class="timer-value" id="countdown">--:--:--</div></section>
 <section class="roll-card"><div class="roulette-wrap" id="rouletteWrap" aria-hidden="true"><div class="roulette-track" id="rouletteTrack"></div></div><div class="relic"><div class="cube" id="cube">◇</div><img class="item-image" id="itemImage" alt="Miner’s Haven item image"><div class="result-placeholder" id="placeholder">YOUR NEXT DROP AWAITS</div></div><div class="eyebrow" id="resultTier">DAILY DROP</div><div class="result-name" id="resultName">Ready to roll?</div><div class="result-meta" id="resultTags"><span class="tag">1 roll per day</span></div><p class="desc" id="resultDesc">Your roll is saved in this browser. Come back after the next daily reset to roll again.</p><a class="item-source" id="wikiLink" href="https://minershaven.fandom.com/wiki/Upgraders" target="_blank" rel="noopener">Browse the Miners Haven Wiki ↗</a><br><div class="roll-actions"><button class="rollbtn" id="rollBtn">✦ ROLL TODAY'S UPGRADER</button>
@@ -338,4 +348,66 @@ async function fetchThumbnailBatch(names){
       const response=await fetch(url.toString(),{mode:'cors',credentials:'omit'});
       if(response.ok){
         const data=await response.json();
-        c... (10 KB left)
+        const pages=Array.isArray(data.query?.pages)?data.query.pages:Object.values(data.query?.pages||{});
+        const pageMap=new Map(pages.map(page=>[normalizeWikiTitle(page.title),page.thumbnail?.source||null]));
+        const aliasMap=new Map();
+        for(const item of [...(data.query?.normalized||[]),...(data.query?.redirects||[])])aliasMap.set(normalizeWikiTitle(item.from),normalizeWikiTitle(item.to));
+        for(const [key,values] of batch){
+          let lookup=key,guard=0;while(aliasMap.has(lookup)&&guard++<5)lookup=aliasMap.get(lookup);
+          const image=pageMap.get(lookup)||pageMap.get(key)||null;
+          if(image)for(const entry of values)result[entry.name]=image;
+        }
+      }
+    }catch(e){/* Use direct FilePath fallbacks below when the API is unavailable. */}
+  }
+  for(const name of unique){
+    if(result[name]){thumbnailCache[requestedWikiTitle(name)]=Promise.resolve(result[name]);continue;}
+    const clean=cleanWikiName(name);
+    result[name]='https://minershaven.fandom.com/wiki/Special:FilePath/'+encodeURIComponent(clean.replace(/ /g,'_'))+'?width=240';
+    thumbnailCache[requestedWikiTitle(name)]=Promise.resolve(result[name]);
+  }
+  return result;
+}
+async function fetchThumbnail(name){
+  const title=requestedWikiTitle(name);
+  if(thumbnailCache[title]!==undefined)return await thumbnailCache[title];
+  const batch=await fetchThumbnailBatch([name]);
+  return batch[String(name)]||null;
+}
+async function loadListImages(){
+  const imgs=[...document.querySelectorAll('img[data-item]')].filter(img=>img.isConnected&&!img.dataset.thumbStarted&&!img.dataset.thumbLoaded);
+  if(!imgs.length)return;
+  imgs.forEach(img=>{img.dataset.thumbStarted='1';img.style.opacity='0'});
+  const urls=await fetchThumbnailBatch(imgs.map(img=>img.dataset.item));
+  let next=0;
+  async function worker(){
+    while(next<imgs.length){
+      const img=imgs[next++];
+      if(!img.isConnected)continue;
+      const url=urls[img.dataset.item];
+      if(!url){img.style.display='none';delete img.dataset.thumbStarted;continue;}
+      const loaded=await new Promise(resolve=>{
+        let finished=false;
+        const timeoutId=setTimeout(()=>finish(false),12000);
+        const finish=ok=>{if(finished)return;finished=true;clearTimeout(timeoutId);img.removeEventListener('load',onload);img.removeEventListener('error',onerror);if(ok){img.style.display='block';img.style.opacity='1';img.dataset.thumbLoaded='1'}else{img.style.display='none';delete img.dataset.thumbStarted}resolve(ok)};
+        const onload=()=>finish(img.naturalWidth>0),onerror=()=>finish(false);
+        img.addEventListener('load',onload,{once:true});img.addEventListener('error',onerror,{once:true});
+        img.src=url;
+        if(img.complete&&img.naturalWidth>0)finish(true);
+      });
+      if(!loaded&&img.isConnected&&img.closest('#bookGrid')&&!img.nextElementSibling?.classList.contains('mini-fallback')){
+        const fallback=document.createElement('span');fallback.className='mini-item mini-fallback';fallback.textContent='✦';img.after(fallback);
+      }
+    }
+  }
+  // Limit simultaneous image downloads after resolving thumbnail URLs in batches.
+  await Promise.all(Array.from({length:Math.min(8,imgs.length)},()=>worker()));
+}
+function renderBook(){const catalog=catalogItems(),owned=state.collection||{},search=(document.getElementById('bookSearch')?.value||'').trim().toLowerCase(),filter=document.getElementById('bookFilter')?.value||'all';const discovered=catalog.filter(it=>owned[it.catalogName]).length;document.getElementById('bookCount').textContent=`${discovered} / ${catalog.length} discovered`;const shown=catalog.filter(it=>{const has=!!owned[it.catalogName];if(search&&!it.catalogName.toLowerCase().includes(search)&&!it.tier.toLowerCase().includes(search))return false;if(filter==='owned'&&!has)return false;if(filter==='missing'&&has)return false;if(filter==='shiny'&&!it.shiny)return false;if(filter==='limited'&&it.catalogVariant!=='Limited Shiny'&&it.tier!=='Limited Reborn')return false;return true});const grid=document.getElementById('bookGrid');grid.innerHTML=shown.map(it=>{const has=!!owned[it.catalogName],variant=it.catalogVariant;return `<div class="book-item ${has?'':'unowned'} ${has&&owned[it.catalogName].shiny?'book-shiny':''}"><img class="mini-item" data-item="${esc(it.catalogName)}" alt="${esc(it.catalogName)}" onerror="this.style.display='none';if(!this.nextElementSibling||!this.nextElementSibling.classList.contains('mini-fallback')){const f=document.createElement('span');f.className='mini-item mini-fallback';f.textContent='✦';this.after(f)}"><div><strong>${esc(it.catalogName)}</strong><small>${esc(it.tier)} · ${it.denom?`Base rarity 1/${it.denom}`:'Special'} · ${it.points} Shards</small><small class="${has?'owned-mark':''}">${has?`✓ Owned ×${owned[it.catalogName].count}${owned[it.catalogName].shiny?' · ✦ SHINY DISCOVERED':''}`:'◇ Not discovered'}</small></div></div>`}).join('')||'<div class="empty">No items match this filter.</div>';loadListImages()}
+function render(){let rolled=state.lastDate===dailyKey(),b=document.getElementById('rollBtn');b.disabled=rolled||rolling;b.textContent=rolled?'✓ TODAY’S ROLL COMPLETE':'✦ ROLL TODAY’S UPGRADER';document.getElementById('datePill').textContent='DAILY RESET • UTC DATE '+today();document.getElementById('totalRolls').textContent=state.history.length;document.getElementById('totalPoints').textContent=Object.values(state.collection).reduce((a,c)=>a+c.points,0).toLocaleString();document.getElementById('uniqueCount').textContent=Object.keys(state.collection).length;
+let last=state.history[0];if(last){document.getElementById('cube').textContent=last.icon||'◇';document.getElementById('placeholder').textContent='TODAY’S DROP';document.getElementById('resultTier').textContent=last.tier.toUpperCase();document.getElementById('resultName').textContent=last.displayName||last.finalName;document.getElementById('resultDesc').textContent=last.desc;loadWikiImage(last.finalName);document.getElementById('resultTags').innerHTML=`<span class="tag">${esc(last.tier)}</span><span class="tag ${last.variant==='Normal'?'':'shiny'} ${last.variant==='Limited Shiny'?'limited':''}">${esc(last.variant)}</span><span class="tag">+${last.earned} Shards</span><span class="tag">Base rarity 1/${last.denom}</span>`;}else{document.getElementById('cube').textContent='◇';document.getElementById('placeholder').textContent='YOUR NEXT DROP AWAITS';document.getElementById('resultTier').textContent='DAILY DROP';document.getElementById('resultName').textContent='Ready to roll?';document.getElementById('resultDesc').textContent='Your roll is saved in this browser. Come back after the next daily reset to roll again.';document.getElementById('itemImage').style.display='none';document.getElementById('cube').style.display='block';document.getElementById('wikiLink').href='https://minershaven.fandom.com/wiki/Upgraders';document.getElementById('resultTags').innerHTML='<span class="tag">1 roll per day</span>'}
+document.getElementById('history').innerHTML=state.history.length?state.history.slice(0,8).map((h,i)=>`<div class="history-row"><div class="item-line"><img class="mini-item" data-item="${esc(h.finalName)}" alt="" onerror="this.style.display='none'"><div><strong>${esc(h.displayName||h.finalName)}</strong><div class="muted">${esc(h.date)} · ${esc(h.variant)}</div></div></div><span class="points">+${h.earned} Shards</span></div>`).join(''):'<div class="empty">Your daily rolls will appear here.</div>';
+let cs=Object.values(state.collection).sort((a,b)=>b.points-a.points);document.getElementById('collection').innerHTML=cs.length?cs.slice(0,12).map(c=>`<div class="collection-row"><div class="item-line"><img class="mini-item" data-item="${esc(c.name)}" alt="" onerror="this.style.display='none'"><div><strong>${esc(c.name)}</strong><div class="muted">${esc(c.tier)} · owned ×${c.count}</div></div></div><span class="points">${c.points} Shards</span></div>`).join(''):'<div class="empty">Collect an item to start your collection.</div>';
+renderBook();}
+document.getElementById('bookSearch')?.addEventListener('input',renderBook);document.getElementById('bookFilter')?.addEventListener('change',renderBook);document.getElementById('rollBtn')?.addEventListener('click',animateRoll);document.getElementById('shareBtn')?.addEventListener('click',shareResult);document.getElementById('clearHistory').addEventListener('click',()=>{if(confirm('Clear your roll history? Your collection and points will remain.')){state.history=[];save()}});render();updateCountdown();setInterval(()=>{updateCountdown();if(state.lastDate!==dailyKey())render()},1000);
+</script></body></html>
