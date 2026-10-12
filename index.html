@@ -177,7 +177,7 @@ function originalFandomImageUrl(url){
   if(typeof url!=='string')return url;
   // Fandom thumbnail endpoints are returning 404 in this deployment, while the
   // corresponding original /images/... file works. Strip the resize suffix and cache-buster.
-  return url.replace(/\/revision\/latest\/scale-to-width-down\/\d+(?:\?.*)?$/,'').replace(/\?cb=\d+$/,'');
+  return url.replace(/\/revision\/latest(?:\/scale-to-width-down\/\d+)?(?:\?.*)?$/,'').replace(/\?cb=\d+$/,'');
 }
 const imageCache={};
 async function loadWikiImage(itemName){
