@@ -317,84 +317,25 @@ function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;',
 function catalogItems(){return items.map(it=>({...it,catalogName:it.name,catalogVariant:'Normal'}))}
 
 const thumbnailCache={};
-function wikiPageFor(name){let base=name.replace(/^⭐\s*/,'').replace(/\s*⭐$/,'');const prefixes=['Mint ','Dawn ','Alpha ','Dreamy ','Ashen ','Wealthy ','Void ','Storm ','Eldritch ','Swag ','Ascended ','Unripe ','Moth ','Parsnip ','Bitter ','Shiny '];for(const prefix of prefixes){if(base.startsWith(prefix)){base=base.slice(prefix.length);break}}if(base==='Cupid’s Crystallized System')base='Crystallized System';if(base==='Darkseed Pumpkin Hut')base='Darkseed Pumpkin Hut';return 'https://minershaven.fandom.com/wiki/'+(wikiTitles[base]||base.replace(/ /g,'_').replace(/'/g,'%27'))}
-async function fetchThumbnail(name){
-  const pageUrl=wikiPageFor(name),title=decodeURIComponent(pageUrl.split('/wiki/')[1]||'');
-  if(thumbnailCache[title]!==undefined)return await thumbnailCache[title];
-  const clean=String(name).replace(/^✦\s*|\s*✦$/g,'').replace(/^⭐\s*|\s*⭐$/g,'')
-    .replace(/^(Mint|Dawn|Alpha|Dreamy|Ashen|Wealthy|Void|Storm|Eldritch|Swag|Ascended|Unripe|Moth|Parsnip|Bitter|Shiny)\s+/,'');
-  thumbnailCache[title]=(async()=>{
-    const api='https://minershaven.fandom.com/api.php?action=query&format=json&origin=*&redirects=1&prop=pageimages&piprop=thumbnail&pithumbsize=240&titles=';
-    const getImage=async t=>{
-      try{const r=await fetch(api+encodeURIComponent(t));if(!r.ok)return null;const d=await r.json();const p=Object.values(d.query?.pages||{})[0];return p?.thumbnail?.source||null}catch(e){return null}
-    };
-    let image=await getImage(title);
-    if(image)return image;
-    // Keep fallback lookup lightweight; avoid a second API search for every image.
-    return 'https://minershaven.fandom.com/wiki/Special:FilePath/'+encodeURIComponent(clean.replace(/ /g,'_'))+'?width=240';
-  })();
-  return await thumbnailCache[title];
-}
-// Thumbnails are fetched through a small queue rather than hundreds of simultaneous
-// wiki API requests. The previous double-render could also attach competing handlers
-// to the same image during the initial page load.
-async function loadListImages(){
-  // A render can create many thumbnails. Only process each live image once, and
-  // don't give the browser an empty src (which can trigger a premature error).
-  const imgs=[...document.querySelectorAll('img[data-item]')].filter(img=>img.isConnected&&!img.dataset.thumbStarted&&!img.dataset.thumbLoaded);
-  imgs.forEach(img=>{img.dataset.thumbStarted='1';img.style.opacity='0'});
-  let next=0;
-  async function worker(){
-    while(next<imgs.length){
-      const img=imgs[next++];
-      if(!img.isConnected)continue;
-      let timeoutId;
-      try{
-        const url=await fetchThumbnail(img.dataset.item);
-        if(!url||!img.isConnected){delete img.dataset.thumbStarted;continue}
-        const loaded=await new Promise(resolve=>{
-          let finished=false;
-          const finish=ok=>{
-            if(finished)return;finished=true;clearTimeout(timeoutId);
-            img.removeEventListener('load',onload);img.removeEventListener('error',onerror);
-            if(ok){img.style.display='block';img.style.opacity='1';img.dataset.thumbLoaded='1'}
-            else{img.style.display='none';delete img.dataset.thumbStarted}
-            resolve(ok);
-          };
-          const onload=()=>finish(img.naturalWidth>0);
-          const onerror=()=>finish(false);
-          img.addEventListener('load',onload,{once:true});
-          img.addEventListener('error',onerror,{once:true});
-          timeoutId=setTimeout(()=>finish(false),10000);
-          img.src=url;
-          if(img.complete)finish(img.naturalWidth>0);
-        });
-        // If this was a Book of Knowledge image and loading failed, provide the
-        // same visible fallback icon as the inline error handler.
-        if(!loaded&&img.isConnected&&img.closest('#bookGrid')&&!img.nextElementSibling?.classList.contains('mini-fallback')){
-          const fallback=document.createElement('span');fallback.className='mini-item mini-fallback';fallback.textContent='✦';img.after(fallback);
-        }
-      }catch(e){img.style.display='none';delete img.dataset.thumbStarted}
-    }
-  }
-  await Promise.all(Array.from({length:Math.min(4,imgs.length)},()=>worker()));
-}
-function renderBook(){const catalog=catalogItems(),owned=state.collection||{},search=(document.getElementById('bookSearch')?.value||'').trim().toLowerCase(),filter=document.getElementById('bookFilter')?.value||'all';const discovered=catalog.filter(it=>owned[it.catalogName]).length;document.getElementById('bookCount').textContent=`${discovered} / ${catalog.length} discovered`;const shown=catalog.filter(it=>{const has=!!owned[it.catalogName];if(search&&!it.catalogName.toLowerCase().includes(search)&&!it.tier.toLowerCase().includes(search))return false;if(filter==='owned'&&!has)return false;if(filter==='missing'&&has)return false;if(filter==='shiny'&&!it.shiny)return false;if(filter==='limited'&&it.catalogVariant!=='Limited Shiny'&&it.tier!=='Limited Reborn')return false;return true});const grid=document.getElementById('bookGrid');grid.innerHTML=shown.map(it=>{const has=!!owned[it.catalogName],variant=it.catalogVariant;return `<div class="book-item ${has?'':'unowned'} ${has&&owned[it.catalogName].shiny?'book-shiny':''}"><img class="mini-item" data-item="${esc(it.catalogName)}" alt="${esc(it.catalogName)}" onerror="this.style.display='none';if(!this.nextElementSibling||!this.nextElementSibling.classList.contains('mini-fallback')){const f=document.createElement('span');f.className='mini-item mini-fallback';f.textContent='✦';this.after(f)}"><div><strong>${esc(it.catalogName)}</strong><small>${esc(it.tier)} · ${it.denom?`Base rarity 1/${it.denom}`:'Special'} · ${it.points} Shards</small><small class="${has?'owned-mark':''}">${has?`✓ Owned ×${owned[it.catalogName].count}${owned[it.catalogName].shiny?' · ✦ SHINY DISCOVERED':''}`:'◇ Not discovered'}</small></div></div>`}).join('')||'<div class="empty">No items match this filter.</div>';loadListImages()}
-function render(){let rolled=state.lastDate===dailyKey(),b=document.getElementById('rollBtn');b.disabled=rolled||rolling;b.textContent=rolled?'✓ TODAY’S ROLL COMPLETE':'✦ ROLL TODAY’S UPGRADER';document.getElementById('datePill').textContent='DAILY RESET • UTC DATE '+today();document.getElementById('totalRolls').textContent=state.history.length;document.getElementById('totalPoints').textContent=Object.values(state.collection).reduce((a,c)=>a+c.points,0).toLocaleString();document.getElementById('uniqueCount').textContent=Object.keys(state.collection).length;
-let last=state.history[0];if(last){document.getElementById('cube').textContent=last.icon||'◇';document.getElementById('placeholder').textContent='TODAY’S DROP';document.getElementById('resultTier').textContent=last.tier.toUpperCase();document.getElementById('resultName').textContent=last.displayName||last.finalName;document.getElementById('resultDesc').textContent=last.desc;loadWikiImage(last.finalName);document.getElementById('resultTags').innerHTML=`<span class="tag">${esc(last.tier)}</span><span class="tag ${last.variant==='Normal'?'':'shiny'} ${last.variant==='Limited Shiny'?'limited':''}">${esc(last.variant)}</span><span class="tag">+${last.earned} Shards</span><span class="tag">Base rarity 1/${last.denom}</span>`;}else{document.getElementById('cube').textContent='◇';document.getElementById('placeholder').textContent='YOUR NEXT DROP AWAITS';document.getElementById('resultTier').textContent='DAILY DROP';document.getElementById('resultName').textContent='Ready to roll?';document.getElementById('resultDesc').textContent='Your roll is saved in this browser. Come back after the next daily reset to roll again.';document.getElementById('itemImage').style.display='none';document.getElementById('cube').style.display='block';document.getElementById('wikiLink').href='https://minershaven.fandom.com/wiki/Upgraders';document.getElementById('resultTags').innerHTML='<span class="tag">1 roll per day</span>'}
-document.getElementById('history').innerHTML=state.history.length?state.history.slice(0,8).map((h,i)=>`<div class="history-row"><div class="item-line"><img class="mini-item" data-item="${esc(h.finalName)}" alt="" onerror="this.style.display='none'"><div><strong>${esc(h.displayName||h.finalName)}</strong><div class="muted">${esc(h.date)} · ${esc(h.variant)}</div></div></div><span class="points">+${h.earned} Shards</span></div>`).join(''):'<div class="empty">Your daily rolls will appear here.</div>';
-let cs=Object.values(state.collection).sort((a,b)=>b.points-a.points);document.getElementById('collection').innerHTML=cs.length?cs.slice(0,12).map(c=>`<div class="collection-row"><div class="item-line"><img class="mini-item" data-item="${esc(c.name)}" alt="" onerror="this.style.display='none'"><div><strong>${esc(c.name)}</strong><div class="muted">${esc(c.tier)} · owned ×${c.count}</div></div></div><span class="points">${c.points} Shards</span></div>`).join(''):'<div class="empty">Collect an item to start your collection.</div>';
-renderBook();}
-document.getElementById('bookSearch')?.addEventListener('input',renderBook);document.getElementById('bookFilter')?.addEventListener('change',renderBook);document.getElementById('rollBtn')?.addEventListener('click',animateRoll);document.getElementById('shareBtn')?.addEventListener('click',shareResult);document.getElementById('clearHistory').addEventListener('click',()=>{if(confirm('Clear your roll history? Your collection and points will remain.')){state.history=[];save()}});render();updateCountdown();setInterval(()=>{updateCountdown();if(state.lastDate!==dailyKey())render()},1000);
-</script></body></html>
-
-<style>
-.roll-actions{display:flex;flex-direction:column;align-items:stretch;gap:10px;width:100%;margin:12px 0 0}
-.roll-actions #rollBtn,.roll-actions #shareBtn{width:100%;margin-left:0}
-#shareBtn{display:block}
-.relic #rouletteWrap.roulette-wrap{position:absolute;inset:0;z-index:4;width:100%;height:100%;margin:0;border-radius:15px}
-.relic #rouletteWrap.roulette-wrap.active{display:block}
-.roulette-wrap.active{background:linear-gradient(90deg,#0b1420,#182a3d,#0b1420)}
-.roulette-tile img{width:58px;height:58px;object-fit:contain}
-.mini-item{opacity:.85}
-</style>
+function wikiPageFor(name){let base=String(name).replace(/^⭐\s*/,'').replace(/\s*⭐$/,'');const prefixes=['Mint ','Dawn ','Alpha ','Dreamy ','Ashen ','Wealthy ','Void ','Storm ','Eldritch ','Swag ','Ascended ','Unripe ','Moth ','Parsnip ','Bitter ','Shiny '];for(const prefix of prefixes){if(base.startsWith(prefix)){base=base.slice(prefix.length);break}}if(base==='Cupid’s Crystallized System')base='Crystallized System';if(base==='Darkseed Pumpkin Hut')base='Darkseed Pumpkin Hut';return 'https://minershaven.fandom.com/wiki/'+(wikiTitles[base]||base.replace(/ /g,'_').replace(/'/g,'%27'))}
+function cleanWikiName(name){return String(name).replace(/^✦\s*|\s*✦$/g,'').replace(/^⭐\s*|\s*⭐$/g,'').replace(/^(Mint|Dawn|Alpha|Dreamy|Ashen|Wealthy|Void|Storm|Eldritch|Swag|Ascended|Unripe|Moth|Parsnip|Bitter|Shiny)\s+/,'')}
+function normalizeWikiTitle(title){return String(title||'').replace(/_/g,' ').replace(/\s+/g,' ').trim().toLocaleLowerCase()}
+function requestedWikiTitle(name){const url=wikiPageFor(name);try{return decodeURIComponent(url.split('/wiki/')[1]||'')}catch(e){return url.split('/wiki/')[1]||''}}
+async function fetchThumbnailBatch(names){
+  const result={};
+  const unique=[...new Set(names.filter(Boolean).map(name=>String(name)))];
+  const titleToNames=new Map();
+  for(const name of unique){const title=requestedWikiTitle(name);const key=normalizeWikiTitle(title);if(!titleToNames.has(key))titleToNames.set(key,[]);titleToNames.get(key).push({name,title});}
+  const entries=[...titleToNames.entries()];
+  // Ask the wiki for many thumbnails per request. This avoids overwhelming the API
+  // when the Book of Knowledge renders hundreds of cards on GitHub Pages.
+  for(let i=0;i<entries.length;i+=40){
+    const batch=entries.slice(i,i+40);
+    const titles=batch.map(([,values])=>values[0].title);
+    try{
+      const url=new URL('https://minershaven.fandom.com/api.php');
+      url.search=new URLSearchParams({action:'query',format:'json',formatversion:'2',origin:'*',redirects:'1',prop:'pageimages',piprop:'thumbnail',pithumbsize:'240',titles:titles.join('|')}).toString();
+      const response=await fetch(url.toString(),{mode:'cors',credentials:'omit'});
+      if(response.ok){
+        const data=await response.json();
+        c... (10 KB left)
